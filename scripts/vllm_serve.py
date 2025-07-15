@@ -468,22 +468,23 @@ class ScriptArguments:
             "'trace'."
         },
     )
+    # --- 核心修复在这里 ---
     enable_lora: bool = field(
         default=False,
         metadata={
-            "help": "enable_lora"
+            "help": "Enable LoRA support in vLLM." # 使用 'key': 'value' 格式
         },
     )
-    max_lora_rank: float = field(
+    max_lora_rank: int = field(
         default=512,
         metadata={
-            "max_lora_rank"
+            "help": "Maximum rank for LoRA adapters." # 使用 'key': 'value' 格式
         },
     )
-    max_cpu_loras: float = field(
+    max_cpu_loras: int = field(
         default=1,
         metadata={
-            "max_cpu_loras"
+            "help": "Maximum number of LoRA adapters to be stored in CPU memory." # 使用 'key': 'value' 格式
         },
     )
 
@@ -504,8 +505,8 @@ def llm_worker(
         enforce_eager=script_args.enforce_eager,
         dtype=script_args.dtype,
         enable_lora=script_args.enable_lora,
-        max_lora_rank=script_args.max_lora_rank,
-        max_cpu_loras=script_args.max_cpu_loras,
+        max_lora_rank=script_args.max_lora_rank if script_args.enable_lora else None,
+        max_cpu_loras=script_args.max_cpu_loras if script_args.enable_lora else None,
         # Automatic Prefix Caching caches the KV cache of existing queries, so that a new query can
         # directly reuse the KV cache if it shares the same prefix with one of the existing queries.
         # This is particularly useful here because we generate completions from the same prompts.
